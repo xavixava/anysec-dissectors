@@ -1,5 +1,4 @@
--- MKA over UDP protocol dissector
--- https://www.ietf.org/archive/id/draft-hb-intarea-eap-mka-00.html
+-- Wireshark version in console
 --
 
 -- Define the protocol
@@ -8,9 +7,10 @@ local mkaudp = Proto("MKAoUDP", "MACsec Key Agreement over UDP");
 
 -- Define protocol fields
 local fields = {
-    -- mka_header = ProtoField.uint16("mka.header", "MKA Header", base.HEX),
-    eapol_pdu = ProtoField.bytes("mka.eapol_pdu", "Encapsulated EAPOL PDU")
+    mka_header = ProtoField.uint16("mka.header", "Ethertype", base.HEX),
+    -- eapol_pdu = ProtoField.bytes("mka.eapol_pdu", "Encapsulated EAPOL PDU")
 }
+
 
 -- Assign fields to the protocol
 mkaudp.fields = fields
@@ -26,8 +26,12 @@ function mkaudp.dissector(buffer, pinfo, tree)
     -- Create protocol tree
     local subtree = tree:add(mkaudp, buffer(), "MKA over UDP")
 
-    local eapol_pdu = buffer(0, buffer:len())
-    subtree:add(fields.eapol_pdu, eapol_pdu)
+    -- Extract MKA header (assuming 2-byte header for example)
+    local mka_header = buffer(0, 2):uint() -- Do I need to process the MKA header before IEEE 802.1X header?
+    subtree:add(fields.mka_header, buffer(0, 2))
+
+    -- Extract encapsulated 802.1X PDU
+    local eapol_pdu = buffer(2, buffer:len()-2)
 
     local eapol_dissector = Dissector.get("eapol")
     if eapol_dissector then
