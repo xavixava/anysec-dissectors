@@ -1,4 +1,4 @@
--- Wireshark version in console
+-- MKA over UDP using an heuristics dissector
 --
 
 local mkaudp = Proto("MKAoUDP", "MACsec Key Agreement over UDP");
@@ -10,7 +10,24 @@ local fields = {
 }
 mkaudp.fields = fields
 
--- Dissector function
+-- Define known header
+
+local function checker (buffer, pinfo, tree)
+    local ETHERTYPE = 0x888E
+    if buffer:len() < 2 then return false end
+
+    -- Extract the potential header
+    local packet_header = buffer(0, 2):uint()
+    
+    -- Check if the header matches the known pattern
+    if packet_header == ETHERTYPE then
+         mkaudp.dissector(buffer, pinfo, tree)
+	 return true
+    end
+    return false
+end
+
+-- Heuristic dissector function
 function mkaudp.dissector(buffer, pinfo, tree)
     -- Ensure there is enough data
     if buffer:len() < 4 then return end  
@@ -34,11 +51,9 @@ function mkaudp.dissector(buffer, pinfo, tree)
     end
 end
 
--- Define the target UDP port (update according to your network)
-local MKA_PORT = 10000
+-- Register the heuristic dissector for UDP
+-- udp_table = DissectorTable.get("udp")
+-- udp_table:add_heuristic("mkaudp", mkaudp.dissector)
+mkaudp:register_heuristic("udp", checker)
 
--- Register the protocol on the UDP dissector table
-udp_table = DissectorTable.get("udp.port")
-udp_table:add(MKA_PORT, mkaudp)
-
-print("MKA dissector loaded for UDP port " .. MKA_PORT)
+print("mkaudp heuristic dissector loaded for all UDP packets")
