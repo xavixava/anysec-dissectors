@@ -1,19 +1,14 @@
--- MKA over UDP using an heuristics dissector
---
-
-local mkaudp = Proto("MKAoUDP", "MACsec Key Agreement over UDP");
--- local mkaudp = Proto("MKA", "MACsec Key Agreement over UDP")
+local anysec = Proto("ANYsec", "ANYsec");
+-- local anysec = Proto("MKA", "MACsec Key Agreement over UDP")
 
 -- Protocol header definition the protocol
-local fields = {
-    mka_header = ProtoField.uint16("mka.header", "Ethertype", base.HEX),
-}
-mkaudp.fields = fields
-
--- Define known header
+--  local fields = {
+--      mka_header = ProtoField.uint16("mka.header", "Ethertype", base.HEX),
+--  }
+-- anysec.fields = fields
 
 local function checker (buffer, pinfo, tree)
-    local ETHERTYPE = 0x888E
+    local ETHERTYPE = 0x88E5
     if buffer:len() < 2 then return false end
 
     -- Extract the potential header
@@ -21,39 +16,35 @@ local function checker (buffer, pinfo, tree)
     
     -- Check if the header matches the known pattern
     if packet_header == ETHERTYPE then
-         mkaudp.dissector(buffer, pinfo, tree)
+         anysec.dissector(buffer, pinfo, tree)
 	 return true
     end
     return false
 end
 
--- Heuristic dissector function
-function mkaudp.dissector(buffer, pinfo, tree)
+-- Dissector function
+function anysec.dissector(buffer, pinfo, tree)
     -- Ensure there is enough data
-    if buffer:len() < 4 then return end  
+    if buffer:len() < 4 then return end  -- TODO: Change this value to ANYsec's min length
 
     -- Set protocol column in Wireshark
-    pinfo.cols.protocol = mkaudp.name
+    pinfo.cols.protocol = anysec.name
 
     -- Create protocol tree
-    local subtree = tree:add(mkaudp, buffer(), "MKA over UDP")
-
-    -- Extract MKA header (assuming 2-byte header for example)
-    local mka_header = buffer(0, 2):uint() -- Do I need to process the MKA header before IEEE 802.1X header?
-    subtree:add(fields.mka_header, buffer(0, 2))
+    local subtree = tree:add(anysec, buffer(), "ANYsec")
 
     -- Extract encapsulated 802.1X PDU
-    local eapol_pdu = buffer(2, buffer:len()-2)
+    local anysec_packet = buffer(2, buffer:len()-2)
 
-    local eapol_dissector = Dissector.get("eapol")
-    if eapol_dissector then
-        eapol_dissector:call(eapol_pdu:tvb(), pinfo, tree)
+    local dissector_list = Dissector.list()
+    local macsec_dissector = Dissector.get("macsec")
+    if macsec_dissector then
+        macsec_dissector:call(anysec_packet:tvb(), pinfo, tree)
     end
 end
 
--- Register the heuristic dissector for UDP
--- udp_table = DissectorTable.get("udp")
--- udp_table:add_heuristic("mkaudp", mkaudp.dissector)
-mkaudp:register_heuristic("udp", checker)
 
-print("MKAoUDP heuristic dissector loaded for all UDP packets")
+-- Register the protocol on the UDP dissector table
+anysec:register_heuristic("mpls", checker) -- TODO: Discover how to check for label range without for
+
+print("Anysec Heuristic Dissector loaded")
