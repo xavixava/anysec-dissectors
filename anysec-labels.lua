@@ -22,19 +22,12 @@ function anysec.dissector(buffer, pinfo, tree)
     local subtree = tree:add(anysec, buffer(), "ANYsec")
 
     -- Extract encapsulated 802.1X PDU
-    local anysec_packet = buffer(0, buffer:len())
+    local anysec_packet = buffer(2, buffer:len()-2)
 
     local dissector_list = Dissector.list()
-    for i=0, #dissector_list do
-        print(dissector_list[i])
-    end
     local macsec_dissector = Dissector.get("macsec")
-    print(macsec_dissector)
     if macsec_dissector then
-	print("Found MACsec dissector")
-        macsec_dissector:call(macsec_pdu:tvb(), pinfo, tree)
-    elseif macsec_dissector == nil then
-	print("Dissector is nil")
+        macsec_dissector:call(anysec_packet:tvb(), pinfo, tree)
     end
 end
 
@@ -46,6 +39,9 @@ local TEST_LABEL = 2201
 
 -- Register the protocol on the UDP dissector table
 mpls_table = DissectorTable.get("mpls.label") -- TODO: Discover how to check for label range without for
-mpls_table:add(TEST_LABEL, anysec)
 
-print("Dissector loaded for label " .. TEST_LABEL)
+for i=MIN_LABEL, MAX_LABEL do
+    mpls_table:add(i, anysec)
+end
+
+print("Dissector loaded for labels " .. MIN_LABEL .. " to " .. MAX_LABEL)
