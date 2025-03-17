@@ -1,11 +1,13 @@
 local anysec = Proto("ANYsec", "ANYsec");
 -- local anysec = Proto("MKA", "MACsec Key Agreement over UDP")
 
+--
 -- Protocol header definition the protocol
---  local fields = {
---      mka_header = ProtoField.uint16("mka.header", "Ethertype", base.HEX),
---  }
--- anysec.fields = fields
+local fields = {
+    anysec_header = ProtoField.uint16("anysec.header", "Ethertype", base.HEX),
+}
+anysec.fields = fields
+--
 
 local function checker (buffer, pinfo, tree)
     local ETHERTYPE = 0x88E5
@@ -32,6 +34,11 @@ function anysec.dissector(buffer, pinfo, tree)
 
     -- Create protocol tree
     local subtree = tree:add(anysec, buffer(), "ANYsec")
+
+    -- Extract MKA header (assuming 2-byte header for example)
+    local anysec_header = buffer(0, 2) -- Do I need to process the MKA header before IEEE 802.1X header?
+    subtree:add(fields.anysec_header, anysec_header)
+
 
     -- Extract encapsulated 802.1X PDU
     local anysec_packet = buffer(2, buffer:len()-2)

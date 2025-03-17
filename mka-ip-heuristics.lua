@@ -16,6 +16,8 @@ local function checker (buffer, pinfo, tree)
     local ETHERTYPE = 0x888E
     if buffer:len() < 2 then return false end
 
+    -- TODO: Add check for mka in within eapol heade
+
     -- Extract the potential header
     local packet_header = buffer(0, 2):uint()
     
@@ -39,8 +41,8 @@ function mkaudp.dissector(buffer, pinfo, tree)
     local subtree = tree:add(mkaudp, buffer(), "MKA over UDP")
 
     -- Extract MKA header (assuming 2-byte header for example)
-    local mka_header = buffer(0, 2):uint() -- Do I need to process the MKA header before IEEE 802.1X header?
-    subtree:add(fields.mka_header, buffer(0, 2))
+    local mka_header = buffer(0, 2) -- Do I need to process the MKA header before IEEE 802.1X header?
+    subtree:add(fields.mka_header, mka_header)
 
     -- Extract encapsulated 802.1X PDU
     local eapol_pdu = buffer(2, buffer:len()-2)
