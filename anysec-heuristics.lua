@@ -1,22 +1,30 @@
-local anysec = Proto("ANYsec", "ANYsec");
--- local anysec = Proto("MKA", "MACsec Key Agreement over UDP")
+---
+--- Wireshark dissector for Nokia's ANYsec protocol over MPLS
+--- https://documentation.nokia.com/sr/24-3/7750-sr/books/segment-routing-pce-user/anysec.html
+--- 
+-- Between the MPLS label and the SecTag, a ANYsec packet contains 2 Bytes
+-- that match the MACsec frame Ethertype
+-- We check for this "Ethertype" as an heuristic to identify ANYsec packets
 
---
--- Protocol header definition the protocol
+local anysec = Proto("ANYsec", "ANYsec");
+
+-- Fields that will be shown by Wireshark
 local fields = {
     anysec_header = ProtoField.uint16("anysec.header", "Ethertype", base.HEX),
 }
 anysec.fields = fields
---
 
+-- Heuristic checker function
 local function checker (buffer, pinfo, tree)
     local ETHERTYPE = 0x88E5
-    if buffer:len() < 2 then return false end
+    
+    -- 2 octets for the Ethertype + 8/16 octets for the SecTag
+    if buffer:len() < 10 then return false end
 
-    -- Extract the potential header
+    -- Extract the Ethertype
     local packet_header = buffer(0, 2):uint()
     
-    -- Check if the header matches the known pattern
+    -- Check if the Ethertype matches the MACsec one
     if packet_header == ETHERTYPE then
          anysec.dissector(buffer, pinfo, tree)
 	 return true
@@ -24,10 +32,8 @@ local function checker (buffer, pinfo, tree)
     return false
 end
 
--- Dissector function
+-- Heuristic dissector function
 function anysec.dissector(buffer, pinfo, tree)
-    -- Ensure there is enough data
-    if buffer:len() < 4 then return end  -- TODO: Change this value to ANYsec's min length
 
     -- Set protocol column in Wireshark
     pinfo.cols.protocol = anysec.name
@@ -35,15 +41,14 @@ function anysec.dissector(buffer, pinfo, tree)
     -- Create protocol tree
     local subtree = tree:add(anysec, buffer(), "ANYsec")
 
-    -- Extract MKA header (assuming 2-byte header for example)
-    local anysec_header = buffer(0, 2) -- Do I need to process the MKA header before IEEE 802.1X header?
+    -- Extract Ethertype and add it in the protocol tree
+    local anysec_header = buffer(0, 2) 
     subtree:add(fields.anysec_header, anysec_header)
 
-
-    -- Extract encapsulated 802.1X PDU
+    -- Extract encapsulated 802.1AE header and payload
     local anysec_packet = buffer(2, buffer:len()-2)
 
-    local dissector_list = Dissector.list()
+    -- Check if 802.1AE dissector is callable in this wireshark version and call it
     local macsec_dissector = Dissector.get("macsec")
     if macsec_dissector then
         macsec_dissector:call(anysec_packet:tvb(), pinfo, tree)
@@ -51,7 +56,5 @@ function anysec.dissector(buffer, pinfo, tree)
 end
 
 
--- Register the protocol on the UDP dissector table
-anysec:register_heuristic("mpls", checker) -- TODO: Discover how to check for label range without for
-
-print("Anysec Heuristic Dissector loaded")
+-- Register the heuristic dissector for MPLS
+anysec:register_heuristic("mpls", checker)
