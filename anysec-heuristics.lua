@@ -6,6 +6,8 @@
 -- that match the MACsec frame Ethertype
 -- We check for this "Ethertype" as an heuristic to identify ANYsec packets
 
+-- TODO: test decryption and test filters
+
 local anysec = Proto("ANYsec", "ANYsec");
 
 -- Fields that will be shown by Wireshark
