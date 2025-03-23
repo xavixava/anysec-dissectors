@@ -2,11 +2,11 @@
 
 ANYsec is a Nokia quantum-safe technology that provides low-latency, line-rate native encryption for any transport, on any service, at any time, and under any load conditions without impacting performance.
 
-[Nokia's ANYsec](https://www.nokia.com/networks/technologies/fp5/) is based on [IEEE 802.1AE MACsec (Media Access Control Security)](https://1.ieee802.org/security/802-1ae/) and MKA (MACsec Key Agreement), but it extends their capabilities beyond Layer 2. In the control plane, it modifies the MKA protocol from L2 Ethernet to UDP over IP, enabling its use in L3 networks. In the data plane it allows encryption for any transport technology.
+[Nokia's ANYsec](https://www.nokia.com/networks/technologies/fp5/) is based on [IEEE 802.1AE MACsec](https://1.ieee802.org/security/802-1ae/) (Media Access Control Security) and MKA (MACsec Key Agreement), but it extends their capabilities beyond Layer 2. In the control plane, it modifies the MKA protocol from L2 Ethernet to UDP over IP, enabling its use in L3 networks. In the data plane it allows encryption for any transport technology.
 
 This technology can be tested using [ContainerLab (CLAB)](https://containerlab.dev/) with available projects from [SRL-Labs](https://github.com/srl-labs), such as the [ANYsec/MACsec](https://github.com/srl-labs/sros-anysec-macsec-lab) lab. [Wireshark](https://www.wireshark.org/) is an essential tool for testing and validate ANYsec; however, since this technology is still a proprietary network encryption solution, public releases of Wireshark do not yet include ANYsec packet dissectors. 
 
-This repository provides ANYsec Packet Dissectors for Wireshark. Packet dissectors are software components or modules that analyze and interpret network packets, breaking them down into their individual protocol layers.
+This repository provides ANYsec Packet Dissectors for Wireshark. 
 
 
 ## Installation
@@ -85,7 +85,7 @@ It might be necessary to change your "Personal Lua Plugins" on these instruction
 
 ### Windows ???
 
-In Linux, the "Personal Lua Plugins" folder usually is $HOME/.local/lib/wireshark/plugins, as such to setup the dissectors:
+In Linux ???, the "Personal Lua Plugins" folder usually is $HOME/.local/lib/wireshark/plugins, as such to setup the dissectors:
 
 (The commands will only work after the repository is public)
 
@@ -108,34 +108,37 @@ Once you successful install the wireshark plugins you can start playing with it,
 > [!IMPORTANT]  
 > You may use [ContainerLab (CLAB)](https://containerlab.dev/) and [EdgeShark](https://containerlab.dev/manual/wireshark/#edgeshark-integration) to build and test ANYsec your setup.
 
-> **Note:**  
+> [!IMPORTANT]  
 > You may also use available projects from [SRL-Labs](https://github.com/srl-labs), such as the [ANYsec/MACsec](https://github.com/srl-labs/sros-anysec-macsec-lab) lab. 
 
 
 ### Display Filters
 
 You may apply display filters to your wireshark capture to make it easier to identify the packets and inspect the contents. 
-The following filters are available:
-* mkaoudp - display MKA UDP over IP packets only
-* mka - display all MKA (UDP over IP and standard MKA over Ethernet)
-* mka && !mkaoudp - display only standard MKA over Ethernet (excludes mkaoudp)
-* anysec - display anysec data plane packets only (mpls labels followed by the macsec header)
-* macsec - display anysec and standard macsec packets (Ethernet followed by the macsec header)
-* macsec && !anysec - display only the standard macsec packets (excludes anysec)
+The most relevante filters are shown in the table below:
+
+| Filter            | Description   |
+| ----------------- |-------------  | 
+| mkaoudp           | display MKA UDP over IP packets only                                                     |
+| mka               | display all MKA (UDP over IP and standard MKA over Ethernet)                             |
+| mka && !mkaoudp   |display only standard MKA over Ethernet (excludes mkaoudp)                                | 
+| anysec            | display anysec data plane packets only (mpls labels followed by the macsec header)       |
+| macsec            | display anysec and standard macsec packets (Ethernet followed by the macsec header)      |
+| macsec && !anysec | display only the standard macsec packets (excludes anysec)                               | 
 
 
 
 ### Tests
 
 The following picture displays an ANYsec packet:
-> **Note:**  
+> [!Note]  
 > There are 2 MPLS Labels (transport and Encryption SID (ES)) followed by the ANYsec header (EtherType (0x88e5) and the 802.1AE header). The payload is encrypted.
 
 ![Wireshark anysec capture ](images/wireshark_anysec.png)
 
 
 The following picture displays MACsec frame:
-> **Note:**  
+> [!Note] 
 > The Ethernet header is followed by the MACsec/802.1AE header. The EtherType 0x88e5 is part of the Ethernet header.
 
 ![Wireshark anysec capture ](images/wireshark_macsec.png)
@@ -152,6 +155,7 @@ The following picture displays MKA Ethernet frame:
 
 
 # Conclusion
-These wiresharks dissectors are very useful tool to filter and inspect anysec and mka packets.
+These wiresharks dissectors are very useful and powerful tool to filter and inspect anysec and mka packets.
+
 
 
