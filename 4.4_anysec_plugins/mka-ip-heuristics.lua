@@ -8,6 +8,9 @@
 --- as such this version of the dissector uses an heuristic to be able
 --- to identify MKPDUs without the need for user configuration
 ---
+--- Version: 2025-03-24
+--- Author: xavixava (GH handle)
+---
 
 local mkaudp = Proto("MKAoUDP", "MACsec Key Agreement over UDP");
 

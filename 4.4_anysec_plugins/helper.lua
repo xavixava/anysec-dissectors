@@ -1,3 +1,9 @@
+
+--- 
+--- Version: 2025-03-24
+--- Author: xavixava (GH handle)
+---
+
 -- local dissector_list = Dissector.list()
 local macsec_dissector = Dissector.get("macsec")
 if macsec_dissector then
