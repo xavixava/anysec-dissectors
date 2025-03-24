@@ -17,11 +17,11 @@ The dissectors were tested on Wireshark version 4.4.5 with lua support for Linux
 
 The 64-bit Windows version has lua support built-in. The official [installer](https://www.wireshark.org/download.html) for the x64 was used for development and tests.
 
-On linux, there are different Wireshark builds for each different distribution, which means the dissectors might not work for all. In some Wireshark builds there is no lua support and some distributions maintain older Wireshark versions, that don't make the MACsec dissector available to be called through the lua API. We explain how to check for [lua support]() and if the MACsec dissector is [callable through the lua API]().
+On linux, there are different Wireshark builds for each different distribution, which means the dissectors might not work for all. In some Wireshark builds there is no lua support and some distributions maintain older Wireshark versions, that don't make the MACsec dissector available to be called through the lua API. We explain how to check for [lua support](#check-for-lua-support) and if the MACsec dissector is [callable through the lua API](#check-for-macsec-support).
 
 If you own a Mac or a ARM windows and would like to test the dissector, please give us some feedback.
 
-### Check for Lua support
+### [Check for Lua support](#check-for-lua-support)
 
 In order to check if your Wireshark build has lua support, from the GUI select:
 * "Tools" > "Lua Console"
@@ -41,6 +41,31 @@ wireshark --version | grep Lua
 
 The output should return "with Lua <lua version>" if there is lua support.
 
+
+### [Check for macsec support](#check-for-macsec-support)
+
+In order to check if your Wireshark build has macsec support, open the lua console:
+* "Tools" > "Lua Console"
+
+and evaluate the following code (plugin file helper.lua):
+```bash  
+-- local dissector_list = Dissector.list()
+local macsec_dissector = Dissector.get("macsec")
+if macsec_dissector then
+    print("MACsec dissector is callable")
+else
+    print("MACsec dissector is not callable. This dissector is not usable")
+end
+
+-- for i = 1,#dissector_list do
+--     print(dissector_list[i])
+-- end
+ ```
+
+
+The console will display if macsec is supported as shown in the picture below:
+
+![Wireshark Lua Console macsec support](images/wireshark_macsec_support.png)
 
 ### Install the plugins
 
@@ -69,7 +94,7 @@ In summary, the general steps to be followed independently on your operating sys
 The successful loading of the dissectors can be checked by selecting:
 * "Help" > "About Wireshark" > "Plugins", and then search by "Lua"
 
-![Wireshark plugin folder for Lua dissector files ](images/wireshark_lua_plugins.png)
+![Wireshark plugin files ](images/wireshark_lua_plugins.png)
 
 ### Linux
 
@@ -141,18 +166,22 @@ The following picture displays MACsec frame:
 > [!Note] 
 > The Ethernet header is followed by the MACsec/802.1AE header. The EtherType 0x88e5 is part of the Ethernet header.
 
-![Wireshark anysec capture ](images/wireshark_macsec.png)
+![Wireshark macsec capture ](images/wireshark_macsec.png)
 
 
 The following picture displays MKA UDP over IP packet:
 
-![Wireshark anysec capture ](images/wireshark_mkaoudp.png)
+![Wireshark mkaoudp capture ](images/wireshark_mkaoudp.png)
 
 
 The following picture displays MKA Ethernet frame:
 
-![Wireshark anysec capture ](images/wireshark_mka.png)
+![Wireshark mka capture ](images/wireshark_mka.png)
 
+
+### Tests with command line ???
+
+include tshark outputs
 
 # Conclusion
 These wiresharks dissectors are very useful and powerful tool to filter and inspect anysec and mka packets.
