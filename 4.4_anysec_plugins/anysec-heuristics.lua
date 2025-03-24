@@ -5,8 +5,6 @@
 -- Between the MPLS label and the SecTag, a ANYsec packet contains 2 Bytes
 -- that match the MACsec frame Ethertype
 -- We check for this "Ethertype" as an heuristic to identify ANYsec packets
-
--- TODO???: test decryption and test filters
 ---
 --- Version: 2025-03-24
 --- Author: xavixava (GH handle)
