@@ -8,6 +8,7 @@ This technology can be tested using [ContainerLab (CLAB)](https://containerlab.d
 [Wireshark](https://www.wireshark.org/) is an essential tool for testing and validate ANYsec; however, since this technology is still a proprietary network encryption solution, public releases of Wireshark do not yet include ANYsec packet dissectors. 
 This repository provides the ANYsec Packet Dissectors for Wireshark. 
 
+## Installation
 ## Prerequisites/Requirements
 
 The dissectors were tested on Wireshark version 4.4.5 with lua support for Linux and Windows 10 and 11 (not tested for MAC).
@@ -15,10 +16,6 @@ The dissectors were tested on Wireshark version 4.4.5 with lua support for Linux
 The 64-bit Windows version has lua support built-in. The official [installer](https://www.wireshark.org/download.html) for the x64 was used for development and tests.
 
 On linux, there are different Wireshark builds for each different distribution, which means the dissectors might not work for all. In some Wireshark builds there is no lua support and some distributions maintain older Wireshark versions, that don't make the MACsec dissector available to be called through the lua API. We explain how to check for [lua support](#check-for-lua-support) and if the MACsec dissector is [callable through the lua API](#check-for-macsec-support).
-
-## Installation
-
-### Prerequisites/Requirements
 
 If you own a Mac or a ARM windows and would like to test the dissector, please give us some feedback.
 
@@ -64,10 +61,10 @@ The console will display if macsec is supported as shown in the picture below:
 
 While starting the Wireshark will check on specific directories if there are any lua files to load. 
 To install the ANYsec dissectors you just need to copy the dissector folder to the plugins directory and restart the wireshark. The dissector files under the "4.4_anysec_plugins" folder are:
-* anysec-heuristics.lua
-* mka-ip-heuristics.lua
-* helper.lua - only required if we need to validate macsec support
-* mka-ip.lua - Not in use. This is for future use if a UDP port is reserved for MKA over UDP by IANA.
+* **anysec-heuristics.lua**
+* **mka-ip-heuristics.lua**
+* **helper.lua** - only used to validate macsec support
+* **mka-ip.lua** - Not in use. This is for future use if a UDP port is reserved for MKA over UDP by IANA.
 
 To find your Wireshark plugin folder, where you should place the dissectors, select:
 * "Help" > "About Wireshark" > "Folders" 
@@ -90,7 +87,9 @@ The successful loading of the dissectors can be checked by selecting:
 
 ### Linux
 
-In Linux, the "Personal Lua Plugins" folder usually is $HOME/.local/lib/wireshark/plugins, as such to setup the dissectors:
+In Linux, you may use eihter the global or the personal plugins folder to install the dissectors. 
+Both directories depende on the system, in these tests the global directory is ```/usr/lib64/wireshark/plugins/```
+and the personal Lua plugins folder usually is ```$HOME/.local/lib/wireshark/plugins```. To install the dissectors under the personal folder:
 
 1. Clone the repository: ```git clone https://github.com/xavixava/anysec-dissectors.git```
 
@@ -102,7 +101,8 @@ It might be necessary to change your "Personal Lua Plugins" on these instruction
 
 ### Windows
 
-In Windows, the "Personal Lua Plugins" folder usually is $env:APPDATA\Wireshark\plugins, as such to setup the dissectors:
+In Windows, you may use eihter the global or the personal plugins folder to install the dissectors. 
+The global folder ussually is ```"C:\Program Files\Wireshark\plugins"``` and the personal Lua plugins folder usually is ```$env:APPDATA\Wireshark\plugins```. To install the dissectors under the personal folder:
 
 1. Create the "Personal Lua Plugins" directory, if it doesn't exist: ```New-Item -Type Directory -Force -Path $env:APPDATA\Wireshark\plugins```
 
@@ -162,16 +162,9 @@ The following picture displays MKA Ethernet frame:
 
 ### Tests with command line 
 
-If you're using a remote server with no GUI, you've multiple options such as use the command line, or create an SSH tunnel and pipe the capture to you laptop.
-> [!Warning]  
-> You must ensure you install or update your Wireshark/TShark version to one that supports mpls, macsec and lua. Below is as example of the error you get if we try to mannually load the dissector to a tshark version that has no lua support. 
-```bash
-[root@Airframe3 4.4_anysec_plugins]# tshark -X lua_script:anysec-heuristics.lua
-tshark: This version of TShark was not built with support for Lua scripting.
-[root@Airframe3 4.4_anysec_plugins]# 
-```
+If you're using a remote server, you've multiple options such as export display, use EdgeShark, create an SSH tunnel and pipe the capture to you laptop, or use the server bash directly.
+In any case you need to install or update Tshark on the server. Follows an example for a Ubuntu server:
 
-Example on how to install or update Tshark on a Ubuntu server:
 ```bash
 # Install
 sudo apt install tshark
@@ -184,9 +177,10 @@ sudo apt install wireshark tshark -y
 ```
 
 Now that you installed Thsark on the server, you can do remote captures from the remote server to your laptop.
+The easiest way is to use EdgeShark, but if you don't have it, then you can use an SSH tunnel.  
 From your Windows laptop cmd/command prompt create an ssh tunnel to execute Tshark an pipe the output to your local Wireshark. Follows an example of the commands you need to execute it. This will open your wireshark and display all the packets.
 > [!Note] 
->  Display filters aren't supported when capturing and saving the captured packets. As such, you don't need to install the plugins on the remote server only on your local computer wireshark.
+> Display filters aren't supported when capturing and saving/pipe the captured packets. As such, for a remote capture you don't need to install the plugins on the remote server only on your local computer wireshark.
 
 ```bash
 ### Example! Replace IP and windows path
@@ -195,6 +189,15 @@ ssh root@10.82.182.179 "ip netns exec pe1 tshark -l -i eth1 -i eth2 -w -" | "c:\
 ```
 
 If you prefer to simply use the linux bash on the remote server, then you need to upload the dissector folder or files to the tshark global or personal directory. This may vary, but for these tests we've used "/usr/lib64/wireshark/plugins/".  
+
+> [!Warning]  
+> You must ensure you install or update your Wireshark/TShark version to one that supports mpls, macsec and lua. Below is as example of the error you get if we try to mannually load the dissector to a tshark version that has no lua support. 
+```bash
+[root@Airframe3 4.4_anysec_plugins]# tshark -X lua_script:anysec-heuristics.lua
+tshark: This version of TShark was not built with support for Lua scripting.
+[root@Airframe3 4.4_anysec_plugins]# 
+```
+
 Then you may perform a capture on any CLAB node by using the following command on the server OS:
 ```bash
 #syntax
