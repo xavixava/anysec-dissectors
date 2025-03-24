@@ -6,7 +6,11 @@
 -- that match the MACsec frame Ethertype
 -- We check for this "Ethertype" as an heuristic to identify ANYsec packets
 
--- TODO: test decryption and test filters
+-- TODO???: test decryption and test filters
+---
+--- Version: 2025-03-24
+--- Author: xavixava (GH handle)
+---
 
 local anysec = Proto("ANYsec", "ANYsec");
 

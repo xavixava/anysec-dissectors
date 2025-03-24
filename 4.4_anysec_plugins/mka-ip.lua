@@ -1,3 +1,4 @@
+--- NOTE: NOT IN USE! RESERVERD FOR FUTURE USE IF: a port is reserved for MKA over UDP by IANA
 ---
 --- Wireshark dissector for MKA over UDP
 --- https://www.ietf.org/archive/id/draft-hb-intarea-eap-mka-00.html
@@ -9,6 +10,9 @@
 --- but as per Nokia's ANYsec documentation, the network administrator should 
 --- reserve a port on the network for MKA over UDP, as such it is possible to register
 --- a dissector for that port
+---
+--- Version: 2025-03-24
+--- Author: xavixava (GH handle)
 ---
 
 local mkaudp = Proto("MKAoUDP", "MACsec Key Agreement over UDP");
