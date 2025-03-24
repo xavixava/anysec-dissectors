@@ -138,8 +138,6 @@ The most relevante filters are shown in the table below:
 | macsec            | display anysec and standard macsec packets (Ethernet followed by the macsec header)      |
 | macsec && !anysec | display only the standard macsec packets (excludes anysec)                               | 
 
-
-
 ### Tests
 
 The following picture displays an ANYsec packet:
