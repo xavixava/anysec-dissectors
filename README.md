@@ -1,12 +1,14 @@
 # ANYsec and MKA over UDP Packet Dissectors for Wireshark
 
-What is ANYsec and MKA
+This repository provides a Lua-based Wireshark dissector for Nokia's ANYsec encryption protocol. ANYsec leverages MKA (MACsec Key Agreement) over UDP for key distribution and security association management, enabling encryption across networks where standard MACsec would not be feasible.
 
-What are Packet dissectors
+ANYsec extends MACsec beyond Layer 2, allowing encryption across IP and MPLS transport networks. MKA (MACsec Key Agreement) typically runs over Ethernet, but in ANYsec, it is encapsulated in UDP/IP to support key exchange over routed networks.
 
-Tshark Commands
+In Wireshark, dissectors decode packet structures, displaying key fields and metadata in a human-readable format to facilitate network analysis. As both ANYsec and MKA over UDP extend the funcitionality of MACsec and MKA, respectively, while keeping the original PDU format, it is possible to create dissectors for both by calling the Wireshark's original dissectors.
 
 ### Usage
+
+Tshark Commands
 
 ## Prerequisites/Requirements
 
@@ -53,7 +55,7 @@ In Linux, the "Personal Lua Plugins" folder usually is $HOME/.local/lib/wireshar
 
 2. Create the "Personal Lua Plugins" directory, if it doesn't exist: ```mkdir -p $HOME/.local/lib/wireshark/plugins```
 
-3. Copy the dissectors to the "Personal Lua Plugins": ```cp anysec-dissectors/anysec-heuristics.lua $HOME/.local/lib/wireshark/plugins/.; cp anysec-dissectors/mka-ip-heuristics.lua $HOME/.local/lib/wireshark/plugins/."
+3. Copy the dissectors to the "Personal Lua Plugins": ```cp anysec-dissectors/anysec-heuristics.lua $HOME/.local/lib/wireshark/plugins/.; cp anysec-dissectors/mka-ip-heuristics.lua $HOME/.local/lib/wireshark/plugins/.```
 
 It might be necessary to change your "Personal Lua Plugins" on these instructions according to the one on your Wireshark installation.
 
