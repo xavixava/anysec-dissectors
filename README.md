@@ -1,49 +1,100 @@
-# ANYsec and MKA over UDP Packet Dissectors for Wireshark
+# ANYsec Packet Dissectors for Wireshark
 
-What is ANYsec and MKA
+ANYsec is a Nokia quantum-safe technology that provides low-latency, line-rate native encryption for any transport, on any service, at any time, and under any load conditions without impacting performance.
 
-What are Packet dissectors
+[Nokia's ANYsec](https://www.nokia.com/networks/technologies/fp5/) is based on [IEEE 802.1AE MACsec](https://1.ieee802.org/security/802-1ae/) (Media Access Control Security) and MKA (MACsec Key Agreement), but it extends their capabilities beyond Layer 2. In the control plane, it modifies the MKA protocol from L2 Ethernet to UDP over IP, enabling its use in L3 networks. In the data plane it allows encryption for any transport technology.
 
-Tshark Commands
+This technology can be tested using [ContainerLab (CLAB)](https://containerlab.dev/) with available projects from [SRL-Labs](https://github.com/srl-labs), such as the [ANYsec/MACsec](https://github.com/srl-labs/sros-anysec-macsec-lab) lab. [Wireshark](https://www.wireshark.org/) is an essential tool for testing and validate ANYsec; however, since this technology is still a proprietary network encryption solution, public releases of Wireshark do not yet include ANYsec packet dissectors. 
 
-### Usage
+This repository provides ANYsec Packet Dissectors for Wireshark. 
 
-## Prerequisites/Requirements
 
-The dissectors were tested on Wireshark version 4.4.5 with lua support for Linux and Windows 10 and 11.
+## Installation
 
-The 64-bit Windows version has lua support built-in from what I've tested. The official [installer](https://www.wireshark.org/download.html) for the x64 was the one tested.
+### Prerequisites/Requirements
 
-On linux, there are different Wireshark builds for each different distribution, which means the dissectors might not work. In some Wireshark builds there is no lua support and some distributions maintain older Wireshark versions, that don't make the MACsec dissector available to be called through the lua API. We explain how to check for [lua support]() and if the MACsec dissector is [callable through the lua API]().
+The dissectors were tested on Wireshark version 4.4.5 with lua support for Linux and Windows 10 and 11 (not tested for MAC).
 
-If you own a Mac or a ARM windows and test the dissector, give some feedback please
+The 64-bit Windows version has lua support built-in. The official [installer](https://www.wireshark.org/download.html) for the x64 was used for development and tests.
 
-### Check for Lua support
+On linux, there are different Wireshark builds for each different distribution, which means the dissectors might not work for all. In some Wireshark builds there is no lua support and some distributions maintain older Wireshark versions, that don't make the MACsec dissector available to be called through the lua API. We explain how to check for [lua support](#check-for-lua-support) and if the MACsec dissector is [callable through the lua API](#check-for-macsec-support).
 
-In order to check if your Wireshark build has lua support press "Help" > "About Wireshark" and it should open a window that looks like this:
+If you own a Mac or a ARM windows and would like to test the dissector, please give us some feedback.
 
-![Window with informations about the Wireshark build](images/about.png)
+### [Check for Lua support](#check-for-lua-support)
 
-Alternatively, if you're using linux you can run ```wireshark --version``` on your terminal or ```'C:\Program Files\Wireshark\Wireshark.exe' --version``` if you're using Windows.
+In order to check if your Wireshark build has lua support, from the GUI select:
+* "Tools" > "Lua Console"
 
-The first paragraph indicates the Wireshark version. The paragraph that starts with "Compiled (64-bit) using" should contain the information about whether there is lua support on your build. It should contain "with Lua <lua version>" if there is lua support.
+ This option should open the lua console as shown in the picture below. If you don't see the option then lua is not supported.
 
-### Check MACsec support
+![Wireshark Lua Console](images/wireshark_lua_console.png)
 
-## Installation/Quickstart
+Alternatively, if you're using linux you can run on your terminal:
+```bash 
+wireshark --version | grep Lua
+``` 
+ or if you're using Windows:
+ ```bash 
+ "C:\Program Files\Wireshark\Wireshark.exe" --v | findstr Lua
+ ``` 
 
-While starting Wireshark will check on specific directories if there are any lua files to be run. We need to put the dissectors on those directories.
+The output should return "with Lua <lua version>" if there is lua support.
 
-You can find the directory by pressing "Help" > "About Wireshark" and choosing "Folders" on the menu shown on the [lua support section](). Then the intended directory should be on "Personal Lua Plugins" on the menu shown in the following picture ![](images/folder.png).
 
-If your Wireshark version fulfills the [requirements](), then the general steps to be followed independently on your operating system should be:
+### [Check for macsec support](#check-for-macsec-support)
 
-1. Clone the repository or Download the lua files
+In order to check if your Wireshark build has macsec support, open the lua console:
+* "Tools" > "Lua Console"
 
-2. Copy the anysec-heuristics.lua and mka-ip-heuristics.lua files to the "Personal Lua Plugins" folder and (re)start Wireshark.
+and evaluate the following code (plugin file helper.lua):
+```bash  
+-- local dissector_list = Dissector.list()
+local macsec_dissector = Dissector.get("macsec")
+if macsec_dissector then
+    print("MACsec dissector is callable")
+else
+    print("MACsec dissector is not callable. This dissector is not usable")
+end
 
-The loading of the dissectors can be checked by going in "Help" > "About Wireshark" TODO:
+-- for i = 1,#dissector_list do
+--     print(dissector_list[i])
+-- end
+ ```
 
+
+The console will display if macsec is supported as shown in the picture below:
+
+![Wireshark Lua Console macsec support](images/wireshark_macsec_support.png)
+
+### Install the plugins
+
+While starting the Wireshark will check on specific directories if there are any lua files to load. 
+To install the ANYsec dissectors you just need to copy the dissector folder to the plugins directory and restart the wireshark. The dissector files under the "4.4_anysec_plugins" folder are:
+* anysec-heuristics.lua
+* mka-ip-heuristics.lua
+* helper.lua ???
+
+
+To find your Wireshark plugin folder, where you should place the dissectors, select:
+* "Help" > "About Wireshark" > "Folders" 
+
+You may search by lua and you'll get an output similar to the picture bellow. You may choose the "Global Lua Plugins" or the "Personal Lua Plugins" folders.
+
+![Wireshark plugin folder for Lua dissector files ](images/wireshark_lua_folders.png)
+
+
+In summary, the general steps to be followed independently on your operating system should be:
+
+1. Clone the repository or download the lua folder/files.
+
+2. Copy the folder with the anysec-heuristics.lua and mka-ip-heuristics.lua files to the "Lua Plugins" folder and (re)start Wireshark.
+
+
+The successful loading of the dissectors can be checked by selecting:
+* "Help" > "About Wireshark" > "Plugins", and then search by "Lua"
+
+![Wireshark plugin files ](images/wireshark_lua_plugins.png)
 
 ### Linux
 
@@ -57,9 +108,9 @@ In Linux, the "Personal Lua Plugins" folder usually is $HOME/.local/lib/wireshar
 
 It might be necessary to change your "Personal Lua Plugins" on these instructions according to the one on your Wireshark installation.
 
-### Windows
+### Windows ???
 
-In Linux, the "Personal Lua Plugins" folder usually is $HOME/.local/lib/wireshark/plugins, as such to setup the dissectors:
+In Linux ???, the "Personal Lua Plugins" folder usually is $HOME/.local/lib/wireshark/plugins, as such to setup the dissectors:
 
 (The commands will only work after the repository is public)
 
@@ -71,12 +122,69 @@ In Linux, the "Personal Lua Plugins" folder usually is $HOME/.local/lib/wireshar
 
 It might be necessary to change your "Personal Lua Plugins" on these instructions according to the one on your Wireshark installation.
 
-## Test
 
-Should I leave test files?
+## Usage
 
-## Motivation
+Once you successful install the wireshark plugins you can start playing with it, but you need a ANYsec setup.
 
-## Limitations
+> [!TIP]  
+> If you don't have a setup but want to test the dissectors anyway, you may simply used the example pcap file provided in this repo.
 
-Mention SRv6 support
+> [!IMPORTANT]  
+> You may use [ContainerLab (CLAB)](https://containerlab.dev/) and [EdgeShark](https://containerlab.dev/manual/wireshark/#edgeshark-integration) to build and test ANYsec your setup.
+
+> [!IMPORTANT]  
+> You may also use available projects from [SRL-Labs](https://github.com/srl-labs), such as the [ANYsec/MACsec](https://github.com/srl-labs/sros-anysec-macsec-lab) lab. 
+
+
+### Display Filters
+
+You may apply display filters to your wireshark capture to make it easier to identify the packets and inspect the contents. 
+The most relevante filters are shown in the table below:
+
+| Filter            | Description   |
+| ----------------- |-------------  | 
+| mkaoudp           | display MKA UDP over IP packets only                                                     |
+| mka               | display all MKA (UDP over IP and standard MKA over Ethernet)                             |
+| mka && !mkaoudp   |display only standard MKA over Ethernet (excludes mkaoudp)                                | 
+| anysec            | display anysec data plane packets only (mpls labels followed by the macsec header)       |
+| macsec            | display anysec and standard macsec packets (Ethernet followed by the macsec header)      |
+| macsec && !anysec | display only the standard macsec packets (excludes anysec)                               | 
+
+
+
+### Tests
+
+The following picture displays an ANYsec packet:
+> [!Note]  
+> There are 2 MPLS Labels (transport and Encryption SID (ES)) followed by the ANYsec header (EtherType (0x88e5) and the 802.1AE header). The payload is encrypted.
+
+![Wireshark anysec capture ](images/wireshark_anysec.png)
+
+
+The following picture displays MACsec frame:
+> [!Note] 
+> The Ethernet header is followed by the MACsec/802.1AE header. The EtherType 0x88e5 is part of the Ethernet header.
+
+![Wireshark macsec capture ](images/wireshark_macsec.png)
+
+
+The following picture displays MKA UDP over IP packet:
+
+![Wireshark mkaoudp capture ](images/wireshark_mkaoudp.png)
+
+
+The following picture displays MKA Ethernet frame:
+
+![Wireshark mka capture ](images/wireshark_mka.png)
+
+
+### Tests with command line ???
+
+include tshark outputs
+
+# Conclusion
+These wiresharks dissectors are very useful and powerful tool to filter and inspect anysec and mka packets.
+
+
+
