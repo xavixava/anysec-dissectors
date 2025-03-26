@@ -2,7 +2,7 @@
 
 ANYsec is a Nokia quantum-safe technology that provides low-latency, line-rate native encryption for any transport, on any service, at any time, and under any load conditions without impacting performance.
 
-[Nokia's ANYsec](https://www.nokia.com/networks/technologies/fp5/) is based on [IEEE 802.1AE MACsec](https://1.ieee802.org/security/802-1ae/) (Media Access Control Security) and MKA (MACsec Key Agreement), but it extends their capabilities beyond Layer 2. In the control plane, the MKA protocol id modified from L2 Ethernet to UDP over IP, enabling its use in L3 networks. In the data plane it allows encryption for any transport technology. 
+[Nokia's ANYsec](https://www.nokia.com/networks/technologies/fp5/) is based on [IEEE 802.1AE MACsec](https://1.ieee802.org/security/802-1ae/) (Media Access Control Security) and MKA (MACsec Key Agreement), but it extends their capabilities beyond Layer 2. In the control plane, the MKA protocol is modified from L2 Ethernet to UDP over IP, enabling its use in L3 networks. In the data plane it allows encryption for any transport technology. 
 ANYsec can be tested using [ContainerLab (CLAB)](https://containerlab.dev/) and with available projects from [SRL-Labs](https://github.com/srl-labs), such as the [ANYsec/MACsec](https://github.com/srl-labs/sros-anysec-macsec-lab) lab.  
 
 [Wireshark](https://www.wireshark.org/) is an essential tool for testing and validate ANYsec; however, since this technology is still a proprietary network encryption solution, public releases of Wireshark do not yet include ANYsec packet dissectors. 
