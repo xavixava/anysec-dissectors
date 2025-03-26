@@ -9,7 +9,18 @@ ANYsec can be tested using [ContainerLab (CLAB)](https://containerlab.dev/) and 
 This repository provides the ANYsec Packet Dissectors for Wireshark. 
 
 ## Installation
-## Prerequisites/Requirements
+### Quick start
+To quickly test the ANYsec dissectors:
+
+1. Copy the plugins folder/files to your Wireshark Plugins folder and (re)start Wireshark.
+
+2. Open the pcap file provided or get one from your setup
+
+3. Apply the "mkaoudp" and/or "anysec" or any other [display filters](#display-filters)
+
+If you encounter problems or need more details, just keep reading the details below.
+
+### Prerequisites/Requirements
 
 The dissectors were tested on Wireshark version 4.4.5 with lua support for Linux and Windows 10 and 11 (not tested for MAC).
 
@@ -124,7 +135,7 @@ Once you successful install the wireshark plugins you can start playing with it,
 > You may also use available projects from [SRL-Labs](https://github.com/srl-labs), such as the [ANYsec/MACsec](https://github.com/srl-labs/sros-anysec-macsec-lab) lab. 
 
 
-### Display Filters
+### [Display Filters](#display-filters)
 
 You may apply display filters to your wireshark capture to make it easier to identify the packets and inspect the contents. 
 The most relevante filters are shown in the table below:
