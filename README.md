@@ -2,8 +2,8 @@
 
 ANYsec is a Nokia quantum-safe technology that provides low-latency, line-rate native encryption for any transport, on any service, at any time, and under any load conditions without impacting performance.
 
-[Nokia's ANYsec](https://www.nokia.com/networks/technologies/fp5/) is based on [IEEE 802.1AE MACsec](https://1.ieee802.org/security/802-1ae/) (Media Access Control Security) and MKA (MACsec Key Agreement), but it extends their capabilities beyond Layer 2. In the control plane, it modifies the MKA protocol from L2 Ethernet to UDP over IP, enabling its use in L3 networks. In the data plane it allows encryption for any transport technology. 
-This technology can be tested using [ContainerLab (CLAB)](https://containerlab.dev/) with available projects from [SRL-Labs](https://github.com/srl-labs), such as the [ANYsec/MACsec](https://github.com/srl-labs/sros-anysec-macsec-lab) lab.  
+[Nokia's ANYsec](https://www.nokia.com/networks/technologies/fp5/) is based on [IEEE 802.1AE MACsec](https://1.ieee802.org/security/802-1ae/) (Media Access Control Security) and MKA (MACsec Key Agreement), but it extends their capabilities beyond Layer 2. In the control plane, the MKA protocol id modified from L2 Ethernet to UDP over IP, enabling its use in L3 networks. In the data plane it allows encryption for any transport technology. 
+ANYsec can be tested using [ContainerLab (CLAB)](https://containerlab.dev/) and with available projects from [SRL-Labs](https://github.com/srl-labs), such as the [ANYsec/MACsec](https://github.com/srl-labs/sros-anysec-macsec-lab) lab.  
 
 [Wireshark](https://www.wireshark.org/) is an essential tool for testing and validate ANYsec; however, since this technology is still a proprietary network encryption solution, public releases of Wireshark do not yet include ANYsec packet dissectors. 
 This repository provides the ANYsec Packet Dissectors for Wireshark. 
@@ -188,7 +188,7 @@ ssh root@<IP> "ip netns exec <CONTAINER> tshark -l -i <IF1> [-i <IF2>] [-i <IFN>
 ssh root@10.82.182.179 "ip netns exec pe1 tshark -l -i eth1 -i eth2 -w -" | "c:\Program Files\Wireshark\Wireshark.exe" -k -i -
 ```
 
-If you prefer to simply use the linux bash on the remote server, then you need to upload the dissector folder or files to the tshark global or personal directory. This may vary, but for these tests we've used "/usr/lib64/wireshark/plugins/".  
+If you prefer to simply use the linux bash on the remote server, then you need to upload the dissector folder or files to the tshark global or personal directory. This may vary, but for these tests we've used "/usr/lib64/wireshark/plugins/" in a Ubuntu server.  
 
 > [!Warning]  
 > You must ensure you install or update your Wireshark/TShark version to one that supports mpls, macsec and lua. Below is as example of the error you get if we try to mannually load the dissector to a tshark version that has no lua support. 
@@ -300,7 +300,7 @@ Data (88 bytes)
 </details>
 
 # Conclusion
-These wiresharks dissectors are very useful and powerful tool to filter and inspect anysec and mka packets.
+These wiresharks dissectors are very useful and a powerful tool to filter and inspect anysec and mka packets.
 
 
 
