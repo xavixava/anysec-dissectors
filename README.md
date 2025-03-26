@@ -12,13 +12,13 @@ This repository provides the ANYsec Packet Dissectors for Wireshark.
 ### Quick start
 To quickly test the ANYsec dissectors:
 
-1. Copy the plugins folder/files to your Wireshark Plugins folder and (re)start Wireshark.
+1. Copy the anysec plugins folder/files to your Wireshark Plugins folder and (re)start Wireshark.
 
-2. Open the pcap file provided or get one from your setup
+2. Open the anysec pcap file provided or get one capture from your setup.
 
-3. Apply the "mkaoudp" and/or "anysec" or any other [display filters](#display-filters)
+3. Apply the "mkaoudp", "anysec" and/or any other [display filters](#display-filters).
 
-If you encounter problems or need more details, just keep reading the details below.
+If you encounter problems or need more details, just keep reading below.
 
 ### Prerequisites/Requirements
 
