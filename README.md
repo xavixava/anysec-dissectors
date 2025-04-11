@@ -75,7 +75,6 @@ To install the ANYsec dissectors you just need to copy the dissector folder to t
 * **anysec-heuristics.lua**
 * **mka-ip-heuristics.lua**
 * **helper.lua** - only used to validate macsec support
-* **mka-ip.lua** - Not in use. This is for future use if a UDP port is reserved for MKA over UDP by IANA.
 
 To find your Wireshark plugin folder, where you should place the dissectors, select:
 * "Help" > "About Wireshark" > "Folders" 
@@ -117,7 +116,7 @@ The global folder ussually is ```"C:\Program Files\Wireshark\plugins"``` and the
 
 1. Create the "Personal Lua Plugins" directory, if it doesn't exist: ```New-Item -Type Directory -Force -Path $env:APPDATA\Wireshark\plugins```
 
-2. Download the lua dissectors: ```cd $env:APPDATA\Wireshark\plugins; curl -o anysec.lua https://raw.githubusercontent.com/xavixava/anysec-dissectors/refs/heads/main/4.4_anysec_plugins/anysec-heuristics.lua; curl -o mka-ip.lua https://raw.githubusercontent.com/xavixava/anysec-dissectors/refs/heads/main/4.4_anysec_plugins/mka-ip-heuristics.lua``` 
+2. Download the lua dissectors: ```cd $env:APPDATA\Wireshark\plugins; curl -o anysec-heuristics.lua https://raw.githubusercontent.com/xavixava/anysec-dissectors/refs/heads/main/4.4_anysec_plugins/anysec-heuristics.lua; curl -o mka-ip-heuristics.lua https://raw.githubusercontent.com/xavixava/anysec-dissectors/refs/heads/main/4.4_anysec_plugins/mka-ip-heuristics.lua``` 
 
 It might be necessary to change your "Personal Lua Plugins" on these instructions according to the one on your Wireshark installation.
 
